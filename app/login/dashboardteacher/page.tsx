@@ -40,7 +40,7 @@ export default function HomePage() {
           onClick={() => router.push("/login")}
         >
           <Image
-            src="/logoutlogo.png" // อัปโหลดไอคอนไว้ใน public/icons/
+            src="/logoutlogo.png"
             alt="logout"
             width={160}
             height={80}
