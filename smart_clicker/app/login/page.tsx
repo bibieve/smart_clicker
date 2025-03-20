@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import { Afacad } from 'next/font/google'
-const afacad = Afacad({ subsets: ['latin'], weight: ['400', '700'] })
+// const afacad = Afacad({ subsets: ['latin'], weight: ['400', '700'] })
 import Link from 'next/link'
 
 export default function Home() {
