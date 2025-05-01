@@ -66,6 +66,21 @@ export default function AddQuestionsPage() {
               <FiX size={20} />
             </button>
             <p className="text-[#5B3C3C] font-semibold text-sm text-xl">{question}</p>
+             {/* ปุ่ม Edit + Send ด้านล่าง */}
+      <div className="flex w-full justify-between mt-4">
+        <button
+          className="bg-white text-[#5B3C3C] text-sm font-semibold px-4 py-1 rounded-full shadow"
+          onClick={() => router.push(`/setquestions?title=${encodeURIComponent(question)}`)}
+        >
+          Edit
+        </button>
+        <button
+          className="bg-[#D2F7B6] text-[#5B3C3C] text-sm font-semibold px-4 py-1 rounded-full shadow"
+          onClick={() => alert(`Send ${question}`)}
+        >
+          Send
+        </button>
+      </div>
           </div>
         ))}
       </div>
