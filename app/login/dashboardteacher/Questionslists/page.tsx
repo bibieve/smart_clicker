@@ -16,20 +16,46 @@ export default function AddQuestionsPage() {
     setIsAdding(true); // เปิดกล่องให้กรอกชื่อคำถาม
   };
 
-  const handleConfirm = () => {
-    if (questionName.trim() !== "") {
-      setQuestions([...questions, questionName]);
-      setQuestionName(""); // ล้างข้อมูลหลังจากเพิ่ม
-      setIsAdding(false); // ปิดกล่องกรอกข้อมูล
+  const handleConfirm = async (e) => {
+    e.preventDefault(); // ป้องกันการรีเฟรชหน้า
+    if (!questionName) {
+      alert("Please enter a question name.");
+      return;
+    }
+    try {
+      const response = await fetch("http://localhost:3000/api/questionsname", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ questionName }),
+      });
+
+      const responseData = await response.json();
+      console.log(responseData);
+  
+      if (response.ok) {
+        if (questionName.trim() !== "") {
+          setQuestions((Questions) => [...Questions, questionName]);
+          setQuestionName(""); // ล้างข้อมูลหลังจากเพิ่ม
+          setIsAdding(false); // ปิดกล่องกรอกข้อมูล
+          router.push("/login/dashboardteacher/questionslists"); // เปลี่ยนเส้นทางไปหน้า questionslists
+        }
+      } else {
+        alert("Failed to add the question. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An error occurred. Please try again.");
     }
   };
-
+  
   // ฟังก์ชันลบคำถาม
   const handleDelete = (index: number) => {
     const newQuestions = questions.filter((_, i) => i !== index);
     setQuestions(newQuestions);
   };
-
+  
   // ฟังก์ชันย้อนกลับไปหน้า dashboardteacher
   const handleBack = () => {
     router.push("/login/dashboardteacher"); // เปลี่ยนเส้นทางไปยังหน้า dashboardteacher
@@ -101,11 +127,11 @@ export default function AddQuestionsPage() {
       {/* กล่องกรอกชื่อชุดคำถาม */}
       {isAdding && (
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg z-20 w-full sm:w-80 md:w-96 lg:w-[400px]">
-          <h3 className="text-lg font-semibold text-center mb-4 text-black">Enter Question Set Name</h3>
+          <h3 className="text-lg font-semibold text-center mb-4 text-black">Question name</h3>
           <input
             type="text"
             className="w-full p-2 border border-gray-300 rounded-md mb-4 text-black"
-            placeholder="Enter name"
+            placeholder="Enter question name"
             value={questionName}
             onChange={(e) => setQuestionName(e.target.value)}
           />

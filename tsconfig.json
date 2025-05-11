@@ -19,7 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./app/*"],  // เพิ่ม alias สำหรับ app
+      "@models/*": ["./models/*"]  // เพิ่ม alias สำหรับ models
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
