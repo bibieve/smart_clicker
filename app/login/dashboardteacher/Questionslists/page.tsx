@@ -16,8 +16,42 @@ export default function AddQuestionsPage() {
     setIsAdding(true); // เปิดกล่องให้กรอกชื่อคำถาม
   };
 
-  const handleConfirm = async (e) => {
-    e.preventDefault(); // ป้องกันการรีเฟรชหน้า
+  // const handleConfirm = async (e) => {
+  //   e.preventDefault(); // ป้องกันการรีเฟรชหน้า
+  //   if (!questionName) {
+  //     alert("Please enter a question name.");
+  //     return;
+  //   }
+  //   try {
+  //     const response = await fetch("http://localhost:3000/api/questionsname", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ questionName }),
+  //     });
+
+  //     const responseData = await response.json();
+  //     console.log(responseData);
+  
+  //     if (response.ok) {
+  //       if (questionName.trim() !== "") {
+  //         setQuestions((Questions) => [...Questions, questionName]);
+  //         setQuestionName(""); // ล้างข้อมูลหลังจากเพิ่ม
+  //         setIsAdding(false); // ปิดกล่องกรอกข้อมูล
+  //         router.push("/login/dashboardteacher/questionslists"); // เปลี่ยนเส้นทางไปหน้า questionslists
+  //       }
+  //     } else {
+  //       alert("Failed to add the question. Please try again.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //     alert("An error occurred. Please try again.");
+  //   }
+  // };
+
+  const handleConfirm = async (e: React.FormEvent) => {
+    e.preventDefault(); // Prevent page refresh
     if (!questionName) {
       alert("Please enter a question name.");
       return;
@@ -33,13 +67,13 @@ export default function AddQuestionsPage() {
 
       const responseData = await response.json();
       console.log(responseData);
-  
+
       if (response.ok) {
         if (questionName.trim() !== "") {
           setQuestions((Questions) => [...Questions, questionName]);
-          setQuestionName(""); // ล้างข้อมูลหลังจากเพิ่ม
-          setIsAdding(false); // ปิดกล่องกรอกข้อมูล
-          router.push("/login/dashboardteacher/questionslists"); // เปลี่ยนเส้นทางไปหน้า questionslists
+          setQuestionName(""); // Clear input after adding
+          setIsAdding(false); // Close input box
+          router.push("/login/dashboardteacher/questionslists"); // Redirect to questions list
         }
       } else {
         alert("Failed to add the question. Please try again.");
