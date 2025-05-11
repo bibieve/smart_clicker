@@ -18,7 +18,17 @@ export default function EditQuestionsPage() {
   const router = useRouter()
   const params = useSearchParams()
   const setId = params.get('id')!
-  const setTitle = params.get('QuestionName') || 'Unnamed Set'
+  // const setTitle = params.get('QuestionName') || 'Unnamed Set'
+  if (!setId) {
+    alert('Missing set ID');
+    router.push('/login/dashboardteacher/questionslists');
+    return;
+  }
+  // if (!setTitle) {
+  //   alert('Missing set Title');
+  //   router.push('/login/dashboardteacher/questionslists');
+  //   return;
+  // }
 
   const [blocks, setBlocks] = useState<QuestionBlock[]>([
     { text: '', imageFile: null, preview: '', choices: ['', '', '', ''], correct: null, time: 0 }
@@ -95,7 +105,7 @@ export default function EditQuestionsPage() {
         <button onClick={() => router.back()} className="absolute left-0 text-white p-2">
           <FiArrowLeft size={24}/>
         </button>
-        <h1 className="text-white text-lg font-semibold">{setTitle}</h1>
+        {/* <h1 className="text-white text-lg font-semibold">{setTitle}</h1> */}
         <button className="absolute right-0 text-white p-2">
           <FiSettings size={24}/>
         </button>
