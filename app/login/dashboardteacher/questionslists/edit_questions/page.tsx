@@ -17,13 +17,13 @@ type QuestionBlock = {
 export default function EditQuestionsPage() {
   const router = useRouter()
   const params = useSearchParams()
-  const setId = params.get('id')!
+  // const setId = params.get('id')!
   // const setTitle = params.get('QuestionName') || 'Unnamed Set'
-  if (!setId) {
-    alert('Missing set ID');
-    router.push('/login/dashboardteacher/questionslists');
-    return;
-  }
+  // if (!setId) {
+  //   alert('Missing set ID');
+  //   router.push('/login/dashboardteacher/questionslists');
+  //   return;
+  // }
   // if (!setTitle) {
   //   alert('Missing set Title');
   //   router.push('/login/dashboardteacher/questionslists');
@@ -84,18 +84,18 @@ export default function EditQuestionsPage() {
       hasImage: Boolean(b.imageFile)
     }))
     const form = new FormData()
-    form.append('setId', setId)
+    // form.append('setId', setId)
     form.append('data', JSON.stringify(payload))
     blocks.forEach((b,i) => {
       if (b.imageFile) form.append(`image_${i}`, b.imageFile)
     })
 
-    const res = await fetch(`/api/questionsets/${setId}/questions`, {
-      method: 'POST',
-      body: form
-    })
-    if (res.ok) router.push('/login/dashboardteacher/questionslists')
-    else alert('Save failed')
+    // const res = await fetch(`/api/questionsets/${setId}/questions`, {
+    //   method: 'POST',
+    //   body: form
+    // })
+    // if (res.ok) router.push('/login/dashboardteacher/questionslists')
+    // else alert('Save failed')
   }
 
   return (
