@@ -17,18 +17,8 @@ type QuestionBlock = {
 export default function EditQuestionsPage() {
   const router = useRouter()
   const params = useSearchParams()
-  // const setId = params.get('id')!
-  // const setTitle = params.get('QuestionName') || 'Unnamed Set'
-  // if (!setId) {
-  //   alert('Missing set ID');
-  //   router.push('/login/dashboardteacher/questionslists');
-  //   return;
-  // }
-  // if (!setTitle) {
-  //   alert('Missing set Title');
-  //   router.push('/login/dashboardteacher/questionslists');
-  //   return;
-  // }
+  const setId = params.get('id')!
+  const setTitle = params.get('QuestionName') || 'Unnamed Set'
 
   const [blocks, setBlocks] = useState<QuestionBlock[]>([
     { text: '', imageFile: null, preview: '', choices: ['', '', '', ''], correct: null, time: 0 }
@@ -84,18 +74,18 @@ export default function EditQuestionsPage() {
       hasImage: Boolean(b.imageFile)
     }))
     const form = new FormData()
-    // form.append('setId', setId)
+    form.append('setId', setId)
     form.append('data', JSON.stringify(payload))
     blocks.forEach((b,i) => {
       if (b.imageFile) form.append(`image_${i}`, b.imageFile)
     })
 
-    // const res = await fetch(`/api/questionsets/${setId}/questions`, {
-    //   method: 'POST',
-    //   body: form
-    // })
-    // if (res.ok) router.push('/login/dashboardteacher/questionslists')
-    // else alert('Save failed')
+    const res = await fetch(`/api/questionsets/${setId}/questions`, {
+      method: 'POST',
+      body: form
+    })
+    if (res.ok) router.push('/login/dashboardteacher/questionslists')
+    else alert('Save failed')
   }
 
   return (
@@ -105,7 +95,7 @@ export default function EditQuestionsPage() {
         <button onClick={() => router.back()} className="absolute left-0 text-white p-2">
           <FiArrowLeft size={24}/>
         </button>
-        {/* <h1 className="text-white text-lg font-semibold">{setTitle}</h1> */}
+        <h1 className="text-white text-lg font-semibold">{setTitle}</h1>
         <button className="absolute right-0 text-white p-2">
           <FiSettings size={24}/>
         </button>
@@ -131,7 +121,13 @@ export default function EditQuestionsPage() {
             <div className="p-4 flex justify-center">
               {b.preview ? (
                 <div className="relative">
-                  <img src={b.preview} className="w-32 h-32 object-cover rounded-lg"/>
+                  <Image
+                    src={b.preview}
+                    alt="Preview of uploaded image"
+                    width={128}
+                    height={128}
+                    className="w-32 h-32 object-cover rounded-lg"
+                  />
                   <button
                     onClick={() => removeImage(i)}
                     className="absolute top-1 right-1 rounded-full p-0.25"
