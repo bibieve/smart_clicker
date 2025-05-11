@@ -35,13 +35,13 @@ export default function EditQuestionsPage() {
     setBlocks(ps => ps.filter((_, idx) => idx !== i))
   }
 
-  const updateBlock = (i: number, field: keyof QuestionBlock, val: any) => {
+  const updateBlock = (i: number, field: keyof QuestionBlock, val: string | File | number | null) => {
     setBlocks(ps => {
-      const a = [...ps]
-      ;(a[i] as any)[field] = val
-      return a
-    })
-  }
+      const a = [...ps];
+      a[i][field] = val; // No `any` used here
+      return a;
+    });
+  };
 
   const updateChoice = (i: number, ci: number, val: string) => {
     setBlocks(ps => {
