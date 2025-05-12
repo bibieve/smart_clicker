@@ -19,8 +19,8 @@ type QuestionBlock = {
 export default function EditQuestionsPage() {
   const router = useRouter()
   const params = useSearchParams()
-  const setId = params.get('_id') || ''
-  const setTitle = params.get('QuestionName') || 'Unnamed Set'
+  const setId = params?.get('_id') || ''
+  const setTitle = params?.get('QuestionName') || 'Unnamed Set'
   // const multer = require('multer')
   // const upload = multer({ dest: 'uploads/' }) // Set the destination for uploaded files
   
