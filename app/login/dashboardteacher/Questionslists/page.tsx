@@ -5,6 +5,7 @@ import Image from "next/image";
 import { FiArrowLeft, FiSettings, FiX } from "react-icons/fi";
 import { useRouter } from "next/navigation"; // ใช้ useRouter สำหรับการนำทาง
 
+
 export default function AddQuestionsPage() {
   const [questions, setQuestions] = useState<string[]>([]);
   const [isAdding, setIsAdding] = useState(false);
@@ -15,40 +16,6 @@ export default function AddQuestionsPage() {
   const addQuestion = () => {
     setIsAdding(true); // เปิดกล่องให้กรอกชื่อคำถาม
   };
-
-  // const handleConfirm = async (e) => {
-  //   e.preventDefault(); // ป้องกันการรีเฟรชหน้า
-  //   if (!questionName) {
-  //     alert("Please enter a question name.");
-  //     return;
-  //   }
-  //   try {
-  //     const response = await fetch("http://localhost:3000/api/questionsname", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ questionName }),
-  //     });
-
-  //     const responseData = await response.json();
-  //     console.log(responseData);
-  
-  //     if (response.ok) {
-  //       if (questionName.trim() !== "") {
-  //         setQuestions((Questions) => [...Questions, questionName]);
-  //         setQuestionName(""); // ล้างข้อมูลหลังจากเพิ่ม
-  //         setIsAdding(false); // ปิดกล่องกรอกข้อมูล
-  //         router.push("/login/dashboardteacher/questionslists"); // เปลี่ยนเส้นทางไปหน้า questionslists
-  //       }
-  //     } else {
-  //       alert("Failed to add the question. Please try again.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //     alert("An error occurred. Please try again.");
-  //   }
-  // };
 
   const handleConfirm = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevent page refresh
@@ -126,21 +93,25 @@ export default function AddQuestionsPage() {
               <FiX size={20} />
             </button>
             <p className="text-[#5B3C3C] font-semibold text-sm text-xl">{question}</p>
-             {/* ปุ่ม Edit + Send ด้านล่าง */}
-      <div className="flex w-full justify-between mt-4">
-        <button
-          className="bg-white text-[#5B3C3C] text-sm font-semibold px-4 py-1 rounded-full shadow"
-          onClick={() => router.push(`/setquestions?title=${encodeURIComponent(question)}`)}
-        >
-          Edit
-        </button>
-        <button
-          className="bg-[#D2F7B6] text-[#5B3C3C] text-sm font-semibold px-4 py-1 rounded-full shadow"
-          onClick={() => alert(`Send ${question}`)}
-        >
-          Send
-        </button>
-      </div>
+            {/* ปุ่ม Edit + Send ด้านล่าง */}
+            <div className="flex w-full justify-between mt-4">
+              <button
+              className="bg-white text-[#5B3C3C] text-sm font-semibold px-4 py-1 rounded-full shadow"
+              onClick={() => 
+                router.push(
+                  `/login/dashboardteacher/questionslists/edit_questions?id=${encodeURIComponent(index)}&QuestionName=${encodeURIComponent(question)}`
+                )
+              }
+            >
+              Edit
+            </button>
+              <button
+                className="bg-[#D2F7B6] text-[#5B3C3C] text-sm font-semibold px-4 py-1 rounded-full shadow"
+                onClick={() => alert(`Send ${question}`)}
+              >
+                Send
+              </button>
+            </div>
           </div>
         ))}
       </div>

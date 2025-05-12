@@ -1,9 +1,11 @@
 'use client'
 
-import { useState, ChangeEvent } from 'react'
+import { useState, ChangeEvent, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { FiArrowLeft, FiSettings, FiX, FiCheck } from 'react-icons/fi'
 import Image from 'next/image'
+
+
 
 type QuestionBlock = {
   text: string
@@ -17,12 +19,27 @@ type QuestionBlock = {
 export default function EditQuestionsPage() {
   const router = useRouter()
   const params = useSearchParams()
-  const setId = params.get('id')!
+  const setId = params.get('_id') || ''
   const setTitle = params.get('QuestionName') || 'Unnamed Set'
+  // const multer = require('multer')
+  // const upload = multer({ dest: 'uploads/' }) // Set the destination for uploaded files
+  
 
   const [blocks, setBlocks] = useState<QuestionBlock[]>([
     { text: '', imageFile: null, preview: '', choices: ['', '', '', ''], correct: null, time: 0 }
   ])
+
+    useEffect(() => {
+    const fetchQuestionSet = async () => {
+      const response = await fetch(`/api/questionsets/${setId}`);
+      const data = await response.json();
+      setBlocks(data.questions);
+    };
+
+    if (setId) {
+      fetchQuestionSet();
+    }
+  }, [setId]);
 
   const addBlock = () => {
     setBlocks(ps => [
@@ -38,7 +55,7 @@ export default function EditQuestionsPage() {
   const updateBlock = (i: number, field: keyof QuestionBlock, val: string | File | number | null) => {
     setBlocks(ps => {
       const a = [...ps];
-      a[i][field] = val; // No `any` used here
+      (a[i][field] as typeof val) = val;
       return a;
     });
   };
@@ -51,42 +68,63 @@ export default function EditQuestionsPage() {
     })
   }
 
-  // single-image upload
+  // image upload
   const onImage = (i: number, e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
     const url = URL.createObjectURL(file)
     updateBlock(i, 'imageFile', file)
     updateBlock(i, 'preview', url)
+
   }
 
   const removeImage = (i: number) => {
     updateBlock(i, 'imageFile', null)
     updateBlock(i, 'preview', '')
+
   }
 
-  const onFinish = async () => {
-    const payload = blocks.map(b => ({
-      text: b.text,
-      choices: b.choices,
-      correct: b.correct,
-      time: b.time,
-      hasImage: Boolean(b.imageFile)
-    }))
-    const form = new FormData()
-    form.append('setId', setId)
-    form.append('data', JSON.stringify(payload))
-    blocks.forEach((b,i) => {
-      if (b.imageFile) form.append(`image_${i}`, b.imageFile)
-    })
+const onFinish = async () => {
+  const payload = blocks.map((b) => ({
+    text: b.text,
+    imageFile: b.imageFile ? b.imageFile.name : null,
+    choices: b.choices,
+    correct: b.correct,
+    time: b.time,
+  }));
 
-    const res = await fetch(`/api/questionsets/${setId}/questions`, {
-      method: 'POST',
-      body: form
-    })
-    if (res.ok) router.push('/login/dashboardteacher/questionslists')
-    else alert('Save failed')
+  if (!setTitle || blocks.length === 0) {
+    alert("Please provide a title and at least one question.");
+    return;
   }
+
+  try {
+    const response = await fetch("/api/questionsets", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        setTitle,
+        questions: payload,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Error response:", errorData);
+      alert(`Failed to save the question set: ${errorData.error || "Unknown error"}`);
+      return;
+    }
+
+    const data = await response.json();
+    console.log("Success:", data);
+    router.push("/login/dashboardteacher/questionslists");
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    alert("An unexpected error occurred. Please try again.");
+  }
+};
 
   return (
     <div className="min-h-screen bg-[#A7ABDE] p-6 flex flex-col items-center">
@@ -122,7 +160,7 @@ export default function EditQuestionsPage() {
               {b.preview ? (
                 <div className="relative">
                   <Image
-                    src={b.preview}
+                    src={b.imageFile ? URL.createObjectURL(b.imageFile) : ''}
                     alt="Preview of uploaded image"
                     width={128}
                     height={128}
