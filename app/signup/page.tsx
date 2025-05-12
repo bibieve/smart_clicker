@@ -23,7 +23,7 @@ export default function Signup() {
             <label className="w-1/4 font-bold text-[#8B6868]">First Name</label>
             <input
               type="text"
-              className="w-3/4 p-4 h-[40px] bg-[#F9F4F8] font-boldborder border-gray-200 rounded-full focus:outline-none"
+              className="w-3/4 p-4 h-[40px] bg-[#F9F4F8] font-boldborder border-gray-200 rounded-full focus:outline-none text-[#696363]"
               placeholder="First Name"
             />
           </div>
@@ -33,7 +33,7 @@ export default function Signup() {
             <label className="w-1/4 text-[#8B6868] font-bold ">Last Name</label>
             <input
               type="text"
-              className="w-3/4 p-4 h-[40px] bg-[#F9F4F8] border border-gray-200 rounded-full focus:outline-none"
+              className="w-3/4 p-4 h-[40px] bg-[#F9F4F8] border border-gray-200 rounded-full focus:outline-none text-[#696363]"
               placeholder="Last Name"
             />
           </div>
@@ -43,7 +43,7 @@ export default function Signup() {
             <label className="w-1/4 text-[#8B6868] font-bold">Student ID</label>
             <input
               type="text"
-              className="w-3/4 p-4 h-[40px] bg-[#F9F4F8] border border-gray-200 rounded-full focus:outline-none"
+              className="w-3/4 p-4 h-[40px] bg-[#F9F4F8] border border-gray-200 rounded-full focus:outline-none text-[#696363]"
               placeholder="Student ID"
             />
           </div>
@@ -53,7 +53,7 @@ export default function Signup() {
             <label className="w-1/4 text-[#8B6868] font-bold">Email</label>
             <input
               type="email"
-              className="w-3/4 p-4 h-[40px] bg-[#F9F4F8] border border-gray-200 rounded-full focus:outline-none"
+              className="w-3/4 p-4 h-[40px] bg-[#F9F4F8] border border-gray-200 rounded-full focus:outline-none text-[#696363]"
               placeholder="Email"
             />
           </div>
@@ -63,7 +63,7 @@ export default function Signup() {
             <label className="w-1/4 text-[#8B6868] font-bold">Password</label>
             <input
               type={showPassword ? 'text' : 'password'}
-              className="w-3/4 p-4 h-[40px] bg-[#F9F4F8] border border-gray-200 rounded-full focus:outline-none pr-12"
+              className="w-3/4 p-4 h-[40px] bg-[#F9F4F8] border border-gray-200 rounded-full focus:outline-none pr-12 text-[#696363]"
               placeholder="Password"
             />
             <div
@@ -79,7 +79,7 @@ export default function Signup() {
             <label className="w-1/4 text-[#8B6868] font-bold">Confirm password</label>
             <input
               type={showConfirmPassword ? 'text' : 'password'}
-              className="w-3/4 p-4 h-[40px] bg-[#F9F4F8] border border-gray-200 rounded-full focus:outline-none pr-12"
+              className="w-3/4 p-4 h-[40px] bg-[#F9F4F8] border border-gray-200 rounded-full focus:outline-none pr-12 text-[#696363]"
               placeholder="Confirm Password"
             />
             <div
