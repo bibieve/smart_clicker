@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/dbConnect';
-import Quiz from '@/models/Quiz';
+import { connectMongoDB } from '../../../../lib/mongodb';
+import Quiz from '../../../../models/Quiz';
+import { useEffect } from 'react';
 
 export async function GET(req, { params }) {
-  await dbConnect();
+  await connectMongoDB();
   try {
     const quiz = await Quiz.findById(params.id);
     if (!quiz) {
@@ -11,33 +12,46 @@ export async function GET(req, { params }) {
     }
     return NextResponse.json(quiz);
   } catch (error) {
+    console.error('Error fetching quiz:', error.message);
     return NextResponse.json({ error: 'Invalid quiz ID' }, { status: 400 });
   }
 }
 
 export async function PUT(req, { params }) {
-  await dbConnect();
+  await connectMongoDB();
   try {
+    const { id } = params;
     const body = await req.json();
-    const updatedQuiz = await Quiz.findByIdAndUpdate(params.id, body, { new: true });
+
+    // อัปเดตสถานะ isDeleted เป็น true
+    const updatedQuiz = await Quiz.findByIdAndUpdate(
+      id,
+      { isDeleted: true }, // อัปเดตฟิลด์ isDeleted
+      { new: true } // ส่งเอกสารที่อัปเดตกลับมา
+    );
+
     if (!updatedQuiz) {
       return NextResponse.json({ error: 'Quiz not found' }, { status: 404 });
     }
+
     return NextResponse.json({ success: true, updatedQuiz });
   } catch (error) {
-    return NextResponse.json({ error: 'Invalid data or quiz ID' }, { status: 400 });
+    console.error('Error updating quiz:', error.message);
+    return NextResponse.json({ error: 'Failed to update quiz' }, { status: 500 });
   }
 }
 
 export async function DELETE(req, { params }) {
-  await dbConnect();
+  await connectMongoDB();
   try {
-    const deleted = await Quiz.findByIdAndDelete(params.id);
-    if (!deleted) {
+    const deletedQuiz = await Quiz.findByIdAndDelete(params.id);
+    if (!deletedQuiz) {
       return NextResponse.json({ error: 'Quiz not found' }, { status: 404 });
     }
     return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json({ error: 'Invalid quiz ID' }, { status: 400 });
+    console.error('Error deleting quiz:', error.message);
+    return NextResponse.json({ error: 'Failed to delete quiz' }, { status: 500 });
   }
 }
+

@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/dbConnect';
-import Question from '@/models/Question';
+import { connectMongoDB } from '../../../../lib/mongodb';
+import Question from '../../../../models/Question';
 
 export async function PUT(req, { params }) {
-  await dbConnect();
+  await connectMongoDB();
   try {
     const body = await req.json();
     
@@ -21,7 +21,7 @@ export async function PUT(req, { params }) {
 }
 
 export async function DELETE(req, { params }) {
-  await dbConnect();
+  await connectMongoDB();
   try {
     const deletedQuestion = await Question.findByIdAndDelete(params.questionId);
 

@@ -1,23 +1,30 @@
 import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/dbConnect';
-import Quiz from '@/models/Quiz';
+import { connectMongoDB } from '../../../lib/mongodb';
+import Quiz from '../../../models/Quiz';
 
 // ดึงชุดคำถามทั้งหมด
 export async function GET() {
-  await dbConnect();
+  await connectMongoDB();
   const quizzes = await Quiz.find({});
   return NextResponse.json(quizzes);
 }
 
 // สร้างชุดคำถามใหม่
 export async function POST(req) {
-  await dbConnect();
-  const body = await req.json();
+  await connectMongoDB();
+  try {
+    const body = await req.json();
 
-  if (!body.title) {
-    return NextResponse.json({ error: 'Title is required' }, { status: 400 });
+    // ตรวจสอบว่าฟิลด์ title มีค่าหรือไม่
+    if (!body.title) {
+      return NextResponse.json({ error: 'Title is required' }, { status: 400 });
+    }
+
+    // สร้าง Quiz ใหม่
+    const quiz = await Quiz.create({ title: body.title, teacherId: body.teacherId });
+    return NextResponse.json({ success: true, quizId: quiz._id });
+  } catch (error) {
+    console.error('Error creating quiz:', error.message);
+    return NextResponse.json({ error: 'Failed to create quiz' }, { status: 500 });
   }
-
-  const quiz = await Quiz.create({ title: body.title, teacherId: body.teacherId });
-  return NextResponse.json({ success: true, quizId: quiz._id });
 }

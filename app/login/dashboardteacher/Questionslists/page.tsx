@@ -1,20 +1,83 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { FiArrowLeft, FiSettings, FiX } from "react-icons/fi";
 import { useRouter } from "next/navigation"; // ใช้ useRouter สำหรับการนำทาง
-
 
 export default function AddQuestionsPage() {
   const [questions, setQuestions] = useState<string[]>([]);
   const [isAdding, setIsAdding] = useState(false);
   const [questionName, setQuestionName] = useState("");
+  const [setId, setSetId] = useState<string | null>(null);
+  const [blocks, setBlocks] = useState<string[]>([]);
   const router = useRouter(); // สร้าง instance ของ useRouter
+
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const response = await fetch('/api/quizzes', {
+          method: 'GET',
+        });
+
+        if (!response.ok) {
+          console.error('Failed to fetch questions');
+          return;
+        }
+
+        const data = await response.json();
+        setQuestions(data.map((quiz: { title: string }) => quiz.title)); // ดึงเฉพาะชื่อชุดคำถาม
+      } catch (error) {
+        console.error('Error fetching questions:', error);
+      }
+    };
+
+    fetchQuestions();
+  }, []);
+
+  useEffect(() => {
+    if (!setId) return;
+
+    (async () => {
+      try {
+        const res = await fetch(`/api/quizzes/${setId}`);
+        if (!res.ok) {
+          console.error('Failed to load quiz', await res.text());
+          return;
+        }
+        const quiz = await res.json();
+        setBlocks(quiz.questions || []); // โหลดคำถามเดิม (ถ้ามี)
+      } catch (error) {
+        console.error('Error fetching quiz:', error);
+      }
+    })();
+  }, [setId]);
 
   // ฟังก์ชันเพิ่มคำถามใหม่
   const addQuestion = () => {
     setIsAdding(true); // เปิดกล่องให้กรอกชื่อคำถาม
+  };
+
+  const createQuiz = async () => {
+    const response = await fetch('/api/quizzes', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        title: questionName,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error response:', errorData);
+      alert(`Failed to create quiz: ${errorData.error}`);
+      return;
+    }
+
+    const data = await response.json();
+    console.log('Quiz created successfully:', data);
   };
 
   const handleConfirm = async (e: React.FormEvent) => {
@@ -24,26 +87,13 @@ export default function AddQuestionsPage() {
       return;
     }
     try {
-      const response = await fetch("http://localhost:3000/api/questionsname", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ questionName }),
-      });
+      await createQuiz();
 
-      const responseData = await response.json();
-      console.log(responseData);
-
-      if (response.ok) {
-        if (questionName.trim() !== "") {
-          setQuestions((Questions) => [...Questions, questionName]);
-          setQuestionName(""); // Clear input after adding
-          setIsAdding(false); // Close input box
-          router.push("/login/dashboardteacher/questionslists"); // Redirect to questions list
-        }
-      } else {
-        alert("Failed to add the question. Please try again.");
+      if (questionName.trim() !== "") {
+        setQuestions((Questions) => [...Questions, questionName]);
+        setQuestionName(""); // Clear input after adding
+        setIsAdding(false); // Close input box
+        router.push("/login/dashboardteacher/questionslists"); // Redirect to questions list
       }
     } catch (error) {
       console.error("Error:", error);
@@ -52,9 +102,29 @@ export default function AddQuestionsPage() {
   };
   
   // ฟังก์ชันลบคำถาม
-  const handleDelete = (index: number) => {
-    const newQuestions = questions.filter((_, i) => i !== index);
-    setQuestions(newQuestions);
+  const handleDelete = async (index: number) => {
+    const questionToDelete = questions[index];
+
+    try {
+      // ส่งคำขอ DELETE ไปยัง API
+      const response = await fetch(`/api/quizzes/${encodeURIComponent(questionToDelete)}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error response:', errorData);
+        alert(`Failed to delete question: ${errorData.error}`);
+        return;
+      }
+
+      // อัปเดต state หลังจากลบสำเร็จ
+      setQuestions((prevQuestions) => prevQuestions.filter((_, i) => i !== index));
+      alert(`Question "${questionToDelete}" deleted successfully.`);
+    } catch (error) {
+      console.error('Error deleting question:', error);
+      alert('An error occurred while deleting the question.');
+    }
   };
   
   // ฟังก์ชันย้อนกลับไปหน้า dashboardteacher
@@ -93,18 +163,17 @@ export default function AddQuestionsPage() {
               <FiX size={20} />
             </button>
             <p className="text-[#5B3C3C] font-semibold text-sm text-xl">{question}</p>
-            {/* ปุ่ม Edit + Send ด้านล่าง */}
             <div className="flex w-full justify-between mt-4">
               <button
-              className="bg-white text-[#5B3C3C] text-sm font-semibold px-4 py-1 rounded-full shadow"
-              onClick={() => 
-                router.push(
-                  `/login/dashboardteacher/questionslists/edit_questions?id=${encodeURIComponent(index)}&QuestionName=${encodeURIComponent(question)}`
-                )
-              }
-            >
-              Edit
-            </button>
+                className="bg-white text-[#5B3C3C] text-sm font-semibold px-4 py-1 rounded-full shadow"
+                onClick={() =>
+                  router.push(
+                    `/login/dashboardteacher/questionslists/edit_questions?id=${encodeURIComponent(index)}&QuestionName=${encodeURIComponent(question)}`
+                  )
+                }
+              >
+                Edit
+              </button>
               <button
                 className="bg-[#D2F7B6] text-[#5B3C3C] text-sm font-semibold px-4 py-1 rounded-full shadow"
                 onClick={() => alert(`Send ${question}`)}

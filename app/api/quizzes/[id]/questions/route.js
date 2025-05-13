@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/dbConnect';
-import Question from '@/models/Question';
+import { connectMongoDB } from '../../../../../lib/mongodb';
+import Question from '../../../../../models/Question';
 
 export async function GET(req, { params }) {
-  await dbConnect();
+  await connectMongoDB();
   try {
     const questions = await Question.find({ quizId: params.id });
     return NextResponse.json(questions);
@@ -13,7 +13,7 @@ export async function GET(req, { params }) {
 }
 
 export async function POST(req, { params }) {
-  await dbConnect();
+  await connectMongoDB();
   try {
     const body = await req.json();
     
