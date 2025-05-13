@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { connectMongoDB } from '../../../../lib/mongodb';
 import Quiz from '../../../../models/Quiz';
-import { useEffect } from 'react';
 
 export async function GET(req, { params }) {
   await connectMongoDB();

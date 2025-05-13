@@ -4,7 +4,7 @@ import { useState, ChangeEvent, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { FiArrowLeft, FiSettings, FiX, FiCheck } from 'react-icons/fi'
 import Image from 'next/image'
-import { title } from 'process'
+
 
 type QuestionBlock = {
   text: string

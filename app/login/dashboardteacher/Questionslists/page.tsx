@@ -6,7 +6,7 @@ import { FiArrowLeft, FiSettings, FiX } from "react-icons/fi";
 import { useRouter } from "next/navigation"; // ใช้ useRouter สำหรับการนำทาง
 
 export default function AddQuestionsPage() {
-  const [questions, setQuestions] = useState<string[]>([]);
+  const [questions, setQuestions] = useState<Array<{ _id: string; title: string }>>([]);
   const [isAdding, setIsAdding] = useState(false);
   const [questionName, setQuestionName] = useState("");
   const [setId, setSetId] = useState<string | null>(null);
@@ -26,7 +26,7 @@ export default function AddQuestionsPage() {
         }
 
         const data = await response.json();
-        setQuestions(data.map((quiz: { title: string }) => quiz.title)); // ดึงเฉพาะชื่อชุดคำถาม
+        setQuestions(data.map((quiz: { _id: string; title: string }) => ({ _id: quiz._id, title: quiz.title }))); // ดึง id และชื่อชุดคำถาม
       } catch (error) {
         console.error('Error fetching questions:', error);
       }
@@ -90,7 +90,7 @@ export default function AddQuestionsPage() {
       await createQuiz();
 
       if (questionName.trim() !== "") {
-        setQuestions((Questions) => [...Questions, questionName]);
+        setQuestions((Questions) => [...Questions, { _id: "", title: questionName }]);
         setQuestionName(""); // Clear input after adding
         setIsAdding(false); // Close input box
         router.push("/login/dashboardteacher/questionslists"); // Redirect to questions list
@@ -107,7 +107,7 @@ export default function AddQuestionsPage() {
 
     try {
       // ส่งคำขอ DELETE ไปยัง API
-      const response = await fetch(`/api/quizzes/${encodeURIComponent(questionToDelete)}`, {
+      const response = await fetch(`/api/quizzes/${encodeURIComponent(questionToDelete.title)}`, {
         method: 'DELETE',
       });
 
@@ -120,7 +120,7 @@ export default function AddQuestionsPage() {
 
       // อัปเดต state หลังจากลบสำเร็จ
       setQuestions((prevQuestions) => prevQuestions.filter((_, i) => i !== index));
-      alert(`Question "${questionToDelete}" deleted successfully.`);
+      alert(`Question "${questionToDelete.title}" deleted successfully.`);
     } catch (error) {
       console.error('Error deleting question:', error);
       alert('An error occurred while deleting the question.');
@@ -162,21 +162,21 @@ export default function AddQuestionsPage() {
             >
               <FiX size={20} />
             </button>
-            <p className="text-[#5B3C3C] font-semibold text-sm text-xl">{question}</p>
+            <p className="text-[#5B3C3C] font-semibold text-sm text-xl">{question.title}</p>
             <div className="flex w-full justify-between mt-4">
               <button
                 className="bg-white text-[#5B3C3C] text-sm font-semibold px-4 py-1 rounded-full shadow"
                 onClick={() =>
                   router.push(
-                    `/login/dashboardteacher/questionslists/edit_questions?id=${encodeURIComponent(index)}&QuestionName=${encodeURIComponent(question)}`
-                  )
+                    `/edit_questions?_id=${question._id}&title=${encodeURIComponent(question.title)}`
+                )
                 }
               >
                 Edit
               </button>
               <button
                 className="bg-[#D2F7B6] text-[#5B3C3C] text-sm font-semibold px-4 py-1 rounded-full shadow"
-                onClick={() => alert(`Send ${question}`)}
+                onClick={() => alert(`Send ${question.title}`)}
               >
                 Send
               </button>

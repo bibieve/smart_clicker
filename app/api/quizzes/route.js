@@ -5,8 +5,13 @@ import Quiz from '../../../models/Quiz';
 // ดึงชุดคำถามทั้งหมด
 export async function GET() {
   await connectMongoDB();
-  const quizzes = await Quiz.find({});
-  return NextResponse.json(quizzes);
+  try {
+    const quizzes = await Quiz.find({}, '_id title'); // ดึงเฉพาะ _id และ title
+    return NextResponse.json(quizzes);
+  } catch (error) {
+    console.error('Error fetching quizzes:', error.message);
+    return NextResponse.json({ error: 'Failed to fetch quizzes' }, { status: 500 });
+  }
 }
 
 // สร้างชุดคำถามใหม่
