@@ -5,7 +5,8 @@ const QuestionSchema = new mongoose.Schema({
   questionText: String,
   choices: [String],
   correctIndex: Number,
-  time: Number
+  time: Number,
+  imageUrl: { type: String }
 });
 
 export default mongoose.models.Question || mongoose.model('Question', QuestionSchema);
