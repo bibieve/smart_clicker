@@ -107,7 +107,7 @@ export default function AddQuestionsPage() {
 
     try {
       // ส่งคำขอ DELETE ไปยัง API
-      const response = await fetch(`/api/quizzes/${encodeURIComponent(questionToDelete.title)}`, {
+      const response = await fetch(`/api/quizzes/${encodeURIComponent(questionToDelete._id)}`, {
         method: 'DELETE',
       });
 
@@ -168,7 +168,7 @@ export default function AddQuestionsPage() {
                 className="bg-white text-[#5B3C3C] text-sm font-semibold px-4 py-1 rounded-full shadow"
                 onClick={() =>
                   router.push(
-                    `/edit_questions?_id=${question._id}&title=${encodeURIComponent(question.title)}`
+                    `/login/dashboardteacher/questionslists/edit_questions?_id=${question._id}&title=${encodeURIComponent(question.title)}`
                 )
                 }
               >

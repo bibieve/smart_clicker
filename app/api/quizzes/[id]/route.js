@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { connectMongoDB } from '../../../../lib/mongodb';
 import Quiz from '../../../../models/Quiz';
 
-export async function GET(req, { params }) {
+export async function GET(req, props) {
+  const params = await props.params;
   await connectMongoDB();
   try {
     const quiz = await Quiz.findById(params.id);
@@ -16,7 +17,8 @@ export async function GET(req, { params }) {
   }
 }
 
-export async function PUT(req, { params }) {
+export async function PUT(req, props) {
+  const params = await props.params;
   await connectMongoDB();
   try {
     const { id } = params;
@@ -40,7 +42,8 @@ export async function PUT(req, { params }) {
   }
 }
 
-export async function DELETE(req, { params }) {
+export async function DELETE(req, props) {
+  const params = await props.params;
   await connectMongoDB();
   try {
     const deletedQuiz = await Quiz.findByIdAndDelete(params.id);
