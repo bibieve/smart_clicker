@@ -28,6 +28,8 @@ export default function StudentPlayQuiz() {
 
   // Handle choice selection, reveal answer, and submit score
   const handleSelect = async (idx: number) => {
+    // ignore if already selected for this question
+    if (selected !== null) return;
     setSelected(idx);
     const correct = questions[current].correctIndex;
     setCorrectIndex(correct);
@@ -60,7 +62,7 @@ export default function StudentPlayQuiz() {
       });
   }, [sessionCode]);
 
-  // Poll session for status and current question index
+  // Poll session for status and current question index; only reset selection when question changes
   useEffect(() => {
     if (!sessionCode) return;
     const interval = setInterval(async () => {
@@ -68,13 +70,16 @@ export default function StudentPlayQuiz() {
       if (res.ok) {
         const data = await res.json();
         setStatus(data.status);
+        // If question index changed, clear previous selection and answer
+        if (data.currentQuestionIndex !== current) {
+          setShowAnswer(false);
+          setSelected(null);
+        }
         setCurrent(data.currentQuestionIndex);
-        setShowAnswer(false);
-        setSelected(null);
       }
     }, 2000);
     return () => clearInterval(interval);
-  }, [sessionCode]);
+  }, [sessionCode, current]);
 
   // Load questions once quiz has started
   useEffect(() => {
