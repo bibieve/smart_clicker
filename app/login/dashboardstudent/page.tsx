@@ -23,7 +23,7 @@ export default function HomePage() {
         {/* Questions Button */}
         <div
           className="bg-[#D2D4F8] w-full sm:w-72 md:w-80 h-72 sm:h-80 flex flex-col items-center justify-center rounded-2xl shadow-lg cursor-pointer transition transform hover:scale-105"
-          onClick={() => router.push("/login/dashboardstudent/play_quiz")}
+          onClick={() => router.push("/login/dashboardstudent/join_quiz")}
         >
           <Image
             src="/iconQR.png"
