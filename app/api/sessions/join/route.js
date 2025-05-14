@@ -4,18 +4,27 @@ import Session from '../../../../models/Session';
 
 export async function POST(req) {
   await connectMongoDB();
-  const { sessionCode, studentName } = await req.json();
+  let { sessionCode, studentName } = await req.json();
 
-  const session = await Session.findOne({ _id: sessionCode });
+  if (!sessionCode || !studentName) {
+    return NextResponse.json({ error: 'Session code and student name are required' }, { status: 400 });
+  }
+
+  sessionCode = sessionCode.toString().trim();
+  studentName = studentName.toString().trim();
+
+  const session = await Session.findOne({ code: sessionCode });
+
   if (!session) {
     return NextResponse.json({ error: 'Session not found' }, { status: 404 });
   }
 
-  if (session.status === 'waiting') {
-    session.participants.push({ name: studentName, score: 0 });
-    await session.save();
-    return NextResponse.json({ success: true, message: 'Joined session' });
-  } else {
-    return NextResponse.json({ error: 'Session already started' }, { status: 400 });
+  if (session.status !== 'waiting' && session.status !== 'in-progress') {
+    return NextResponse.json({ error: 'Session is not joinable' }, { status: 400 });
   }
+
+  session.participants.push({ name: studentName });
+  await session.save();
+
+  return NextResponse.json({ success: true, sessionCode });
 }

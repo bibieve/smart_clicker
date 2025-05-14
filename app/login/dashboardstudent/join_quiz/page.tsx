@@ -9,29 +9,29 @@ export default function JoinQuizPage() {
   const [username, setUsername] = useState("");
   const router = useRouter();
 
-  const handleSessionJoin = async () => {
+  const handleJoinSession = async () => {
     if (!sessionCode) {
-      alert("Please enter a session code");
+      alert('Session code is required');
       return;
     }
 
-    // Call API to join the session
-    const res = await fetch("/api/sessions/join", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ sessionCode, studentName: username }),
-    });
+    try {
+      const res = await fetch('/api/sessions/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionCode, studentName: username }),
+      });
 
-    if (res.ok) {
-      const data = await res.json();
-      console.log("Joined session successfully", data);
+      if (!res.ok) {
+        const error = await res.json();
+        alert(error.error || 'Failed to join session');
+        return;
+      }
 
-      // Redirect to waiting page with session info
-      router.push(`/waiting/${sessionCode}`);
-    } else {
-      alert("Failed to join the session");
+      // Redirect to student waiting room with sessionCode and username as query params
+      router.push(`/login/dashboardstudent/waiting?sessionCode=${sessionCode}&username=${encodeURIComponent(username)}`);
+    } catch (err) {
+      alert('An unexpected error occurred');
     }
   };
 
@@ -71,7 +71,7 @@ export default function JoinQuizPage() {
           />
         </div>
         <button
-          onClick={handleSessionJoin}
+          onClick={handleJoinSession}
           className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-full mt-4 shadow-md transition-transform duration-200"
         >
           <span className="text-base">Join</span>

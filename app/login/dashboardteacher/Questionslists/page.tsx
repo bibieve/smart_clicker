@@ -132,6 +132,36 @@ export default function AddQuestionsPage() {
     router.push("/login/dashboardteacher"); // เปลี่ยนเส้นทางไปยังหน้า dashboardteacher
   };
 
+  // ฟังก์ชันสร้าง session ใหม่และ redirect ไปหน้า play_quiz
+  const handleSend = async (quizId: string) => {
+    try {
+      const response = await fetch('/api/sessions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quizId }),
+      });
+
+      if (!response.ok) {
+        console.error('Failed to create session:', await response.text());
+        alert('Failed to create session');
+        return;
+      }
+
+      const data = await response.json();
+      if (!data.sessionCode) {
+        console.error('Session code is missing in the response:', data);
+        alert('An error occurred: Session code is missing.');
+        return;
+      }
+
+      // Redirect to play_quiz page with sessionCode
+      router.push(`/login/dashboardteacher/play_quiz?sessionCode=${data.sessionCode}`);
+    } catch (error) {
+      console.error('Error creating session:', error);
+      alert('An error occurred while creating the session.');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#A7ABDE] flex flex-col items-center justify-center p-6 relative">
       {/* Back Button */}
@@ -176,7 +206,7 @@ export default function AddQuestionsPage() {
               </button>
               <button
                 className="bg-[#D2F7B6] text-[#5B3C3C] text-sm font-semibold px-4 py-1 rounded-full shadow"
-                onClick={() => alert(`Send ${question.title}`)}
+                onClick={() => handleSend(question._id)}
               >
                 Send
               </button>

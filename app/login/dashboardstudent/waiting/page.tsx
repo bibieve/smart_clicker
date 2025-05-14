@@ -5,14 +5,15 @@ import { FiArrowLeft } from "react-icons/fi";
 import React, { useEffect, useState } from "react";
 
 function ParticipantList({ sessionCode }: { sessionCode: string }) {
-  const [participants, setParticipants] = useState<string[]>([]);
+  type Participant = { name: string; score: number; _id?: string };
+  const [participants, setParticipants] = useState<Participant[]>([]);
 
   useEffect(() => {
     if (!sessionCode || sessionCode === "-") return;
     // ดึงรายชื่อผู้เข้าร่วมจาก API
     const fetchParticipants = async () => {
       try {
-        const res = await fetch(`/api/sessions/sessionCode?sessionCode=${sessionCode}`);
+        const res = await fetch(`/api/sessions/${sessionCode}`);
         if (res.ok) {
           const data = await res.json();
           setParticipants(data.participants || []);
@@ -32,8 +33,10 @@ function ParticipantList({ sessionCode }: { sessionCode: string }) {
     <div className="w-full mt-2">
       <div className="text-[#5B3C3C] font-semibold text-base mb-1">Participants</div>
       <ul className="bg-[#F9F4F8] rounded-xl border border-[#D2D4F8] px-4 py-2 max-h-40 overflow-y-auto">
-        {participants.map((name, idx) => (
-          <li key={idx} className="text-gray-800 py-1 text-base">{name}</li>
+        {participants.map((participant, idx) => (
+          <li key={participant._id || idx} className="text-gray-800 py-1 text-base">
+            {participant.name}
+          </li>
         ))}
       </ul>
     </div>
@@ -45,6 +48,25 @@ export default function WaitingPage() {
   const params = useSearchParams();
   const sessionCode = params?.get("sessionCode") || "-";
   const username = params?.get("username") || "-";
+
+  // Poll session status to navigate to quiz when started
+  useEffect(() => {
+    if (!sessionCode || sessionCode === "-") return;
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/sessions/${sessionCode}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.status === 'started') {
+            router.push(`/login/dashboardstudent/play_quiz?sessionCode=${sessionCode}&username=${encodeURIComponent(username)}`);
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [sessionCode, router]);
 
   return (
     <div className="min-h-screen bg-[#A7ABDE] flex flex-col items-center justify-center p-6 relative">

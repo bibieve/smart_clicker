@@ -10,7 +10,11 @@ const SessionSchema = new mongoose.Schema({
       name: String,
       score: { type: Number, default: 0 }
     }
-  ]
+  ],
+  status: { type: String, default: 'waiting' },
+  startedAt: { type: Date },
+  currentQuestionIndex: { type: Number, default: 0 },
+  code: { type: String, required: true, unique: true }, // Added code field
 }, { timestamps: true });
 
 export default mongoose.models.Session || mongoose.model('Session', SessionSchema);

@@ -1,11 +1,16 @@
-// /app/api/sessions/[sessionCode]/leaderboard/route.js
 import { NextResponse } from 'next/server';
 import { connectMongoDB } from '../../../../../lib/mongodb';
 import Session from '../../../../../models/Session';
 
 export async function GET(req, { params }) {
   await connectMongoDB();
-  const session = await Session.findOne({ _id: params.sessionCode }).populate('participants');
+  const sessionCode = params.sessionCode;
+
+  if (!sessionCode) {
+    return NextResponse.json({ error: 'Session code is required' }, { status: 400 });
+  }
+
+  const session = await Session.findOne({ code: sessionCode }).populate('participants');
 
   if (!session) {
     return NextResponse.json({ error: 'Session not found' }, { status: 404 });
